@@ -1,0 +1,13 @@
+# PRGuard reviewing its own pull requests
+effort: high
+fail_on: critical
+min_confidence: medium
+
+ignore:
+  # the tests are full of fake secrets on purpose
+  - "tests/**"
+
+semgrep:
+  configs:
+    - p/python
+    - p/secrets

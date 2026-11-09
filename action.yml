@@ -1,0 +1,57 @@
+name: PRGuard
+description: Reviews pull requests for security issues and missing tests with Claude, and checks its suggested fixes with Semgrep
+author: Ishaq Ansary
+branding:
+  icon: shield
+  color: orange
+
+inputs:
+  anthropic-api-key:
+    description: Anthropic API key. Without one, only the secret scan and Semgrep run.
+    required: false
+  github-token:
+    description: Token used to read the pull request and post the review
+    default: ${{ github.token }}
+  model:
+    description: Claude model to use (defaults to the config file, then claude-opus-5-5)
+    required: false
+  effort:
+    description: Model effort - low, medium, high, xhigh or max
+    required: false
+  fail-on:
+    description: Fail the check if anything at this severity or above is found (low, medium, high, critical, none)
+    required: false
+  config:
+    description: Path to the config file, read from the pull request's base branch
+    default: .prguard.yml
+  semgrep-version:
+    description: Semgrep version to install
+    default: "1.184.0"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v7
+      with:
+        python-version: "3.12"
+
+    - name: Install PRGuard and Semgrep
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+        SEMGREP_VERSION: ${{ inputs.semgrep-version }}
+      run: |
+        # semgrep goes in its own venv; its pins clash with the anthropic SDK's
+        pipx install --quiet "semgrep==${SEMGREP_VERSION}"
+        python -m pip install --quiet --disable-pip-version-check "$ACTION_PATH"
+
+    - name: Review
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        PRGUARD_MODEL: ${{ inputs.model }}
+        PRGUARD_EFFORT: ${{ inputs.effort }}
+        PRGUARD_FAIL_ON: ${{ inputs.fail-on }}
+        PRGUARD_CONFIG: ${{ inputs.config }}
+      run: python -m prguard github
