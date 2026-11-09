@@ -1,0 +1,11 @@
+rules:
+  - id: no-eval
+    languages: [python]
+    severity: ERROR
+    message: eval() runs whatever string it's given
+    pattern: eval(...)
+  - id: shell-true
+    languages: [python]
+    severity: ERROR
+    message: shell=True with a built-up command string allows shell injection
+    pattern: subprocess.$FUNC(..., shell=True, ...)
