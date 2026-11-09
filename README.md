@@ -106,6 +106,7 @@ A tool that reads untrusted code and has a write token needs to be careful about
 - **Suggested fixes are never shown unchecked.** If Semgrep isn't available, suggestions are dropped instead of posted unverified.
 - **Fork PRs** don't get repository secrets, so PRGuard runs without the LLM there. Don't switch to `pull_request_target` to get around that, since it would run with secrets on code from the fork.
 - Semgrep runs with `--metrics=off`.
+- Every action used here is pinned to a full commit SHA, and the Semgrep job in CI fails if one isn't. Dependabot bumps the pins.
 
 ## Model call
 
