@@ -1,0 +1,19 @@
+diff --git a/app/runner.py b/app/runner.py
+new file mode 100644
+--- /dev/null
++++ b/app/runner.py
+@@ -0,0 +1,14 @@
++import sqlite3
++import subprocess
++
++API_TOKEN = "ghp_Zx9Zx9Zx9Zx9Zx9Zx9Zx9Zx9Zx9Zx9Zx9Zx9"
++
++
++def run(cmd):
++    return subprocess.run(cmd, shell=True, capture_output=True)
++
++
++def find_user(conn: sqlite3.Connection, name: str):
++    return conn.execute(f"SELECT * FROM users WHERE name = '{name}'").fetchall()
++
++
